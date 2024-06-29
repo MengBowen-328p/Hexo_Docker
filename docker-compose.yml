@@ -1,0 +1,20 @@
+version: 'v2.27.0-desktop.2'
+services:
+  hexo:
+    build: ./Hexo
+    dockerfile: Dockerfile
+    depends_on:
+      - proxy
+    links: proxy
+
+  cheverto:
+  
+  mysql:
+    image: mysql:5.7
+    ports:
+      -3306:3307
+  
+  proxy:
+    build: ./Reserve_Proxy
+    dockerfile: Dockerfile
+    

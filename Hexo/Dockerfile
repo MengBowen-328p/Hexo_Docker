@@ -1,24 +1,21 @@
-FROM npm:latest
+FROM node:20.15.0-slim
+
 MAINTAINER mbw328P <mbw.mega328p@gmail.com>
 
-LABEL maintainer = "mbw.mega328p@gmail.com"
-LABEL repository = "https://github.com/"
+LABEL maintainer="mbw.mega328p@gmail.com"
+LABEL repository="https://github.com/MengBowen-328p/Hexo_Docker"
+LABEL homepage="xxxxxxx"
 
-#Hexo server port
+# Set the server port as an environmental
 ENV HEXO_SERVER_PORT=4000
 
-#Git Username & Email
+# Set the git username and email
 ENV GIT_USER="MengBowen-328p"
 ENV GIT_EMAIL="mbw.mega328p@gmail.com"
 
-#Set Area&Language
-ENV LANG zh_CN.UTF-8
-ENV LANGUAGE zh_CN.UTF-8
-ENV LC_ALL zh_CN.UTF-8
-
-#Install hexo requirements
-RUN DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y git git-lfs curl gpg vim net-tools lsof locales ca-certificates openssl openssh-client jq && \
-    #Set locations & language
+# Install requirements
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git git-lfs curl gpg vim net-tools lsof procps locales ca-certificates openssl openssh-client jq && \
     locale-gen zh_CN && \
     localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 && \
     apt-get install -y --no-install-recommends yarn nasm && \
@@ -30,7 +27,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y gi
     apt-get clean && \
     yarn cache clean && \
     npm cache clean --force
-#Install build tools
+
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null && \
     apt-get update && \
@@ -49,19 +46,23 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | g
         libpng-dev \
         gh && \
     apt-get clean
-#Set work directory
-WORKDIR /hexo
-#Expose hexo server port
+
+
+ENV LANG zh_CN.UTF-8
+ENV LANGUAGE zh_CN.UTF-8
+ENV LC_ALL zh_CN.UTF-8
+
+# Set workdir
+WORKDIR /app
+
+# Expose Server Port
 EXPOSE ${HEXO_SERVER_PORT}
-#Copy scripts
-COPY Scripts/entrypoint.sh /entrypoint.sh
-COPY Scripts/user.sh /user.sh
-COPY Scripts/hexo_run.js /hexo_run.js
+
+#Copy Scripts
+COPY ./Scripts/entrypoint.sh /entrypoint.sh
+COPY ./Scripts/userRun.sh /userRun.sh
+COPY ./Scripts/hexo_run.js /hexo_run.js
 
 RUN chmod +x /*.sh
 
-ENTRYPOINT [ "/entrypoint.sh" ]
-
-
-
-
+ENTRYPOINT ["/entrypoint.sh"]
