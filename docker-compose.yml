@@ -1,20 +1,66 @@
-version: 'v2.27.0-desktop.2'
+version: '3.8'
 services:
   hexo:
     build: ./Hexo
-    dockerfile: Dockerfile
+    environment:
+      - TZ=Asia/shanghai
+    container_name: hexo
+    ports:
+      - 89:4000
+    volumes:
+      - ./Container_Volumn/hexo:/app
+    networks:
+      - hexo_network
     depends_on:
-      - proxy
-    links: proxy
+      - chevereto
+    restart: always
+  chevereto:
+    image: linuxserver/chevereto:1.6.2
+    ports:
+      - 88:80
+    environment:
+      - TZ=Asia/shanghai
+      - PUID=1000
+      - PGID=1000
+    container_name: chevereto
+    volumes:
+      - ./Container_Volumn/chevereto/config:/config
+      - ./Container_Volumn/chevereto/data:/data
+    networks:
+      - hexo_network
+    depends_on:
+      - mysql
+    restart: always
 
-  cheverto:
-  
   mysql:
     image: mysql:5.7
+    container_name: mysql
     ports:
-      -3306:3307
-  
+      - 3307:3306
+    environment:
+      - TZ=Asia/shanghai
+      - MYSQL_ROOT_PASSWORD=123456
+    volumes:
+      - ./Container_Volumn/mysql/log:/var/log/mysql
+      - ./Container_Volumn/mysql/data:/var/lib/mysql
+      - ./Container_Volumn/mysql/conf.d:/etc/mysql/conf.d
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - hexo_network
+    restart: always
+
   proxy:
     build: ./Reserve_Proxy
-    dockerfile: Dockerfile
-    
+    container_name: proxy
+    environment:
+      - TZ=Asia/shanghai
+    volumes:
+      - ./Container_Volumn/v2ray:/usr/local/etc/v2ray
+    networks:
+      - hexo_network
+    restart: always
+
+networks:
+  hexo_network:
+    name: hexo_network
+    driver: bridge

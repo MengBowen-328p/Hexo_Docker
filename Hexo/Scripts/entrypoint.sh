@@ -46,9 +46,9 @@ else
     #cnpm install live2d-widget-model-lwet --save
     #cnpm install livereload bufferutil utf-8-validate --save
     echo "install hexo-theme-matery"
-    git clone -b master https://github.com/jerryc127/hexo-theme-butterfly.git themes/butterfly;
+    git clone -b master https://github.com/jerryc127/hexo-theme-butterfly.git /app/themes/butterfly;
     echo "install live2d"
-    git clone https://github.com/stevenjoezhang/live2d-widget themes/butterfly/source;
+    git clone https://github.com/stevenjoezhang/live2d-widget /app/themes/butterfly/source;
 fi;
 
 if [ ! -f /app/requirements.txt ]; then

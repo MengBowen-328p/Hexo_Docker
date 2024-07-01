@@ -1,4 +1,4 @@
-//This file use npx to manage hexo server
+//This file use pm2 to manage hexo server
 const { exec } = require('child_process')
 exec('hexo server -p ${HEXO_SERVER_PORT}',(error, stdout, stderr) => {
         if(error){
